@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "alwaysStrict": true,
+    "declaration": true,
+    "declarationDir": "./dist",
+    "lib": [
+      "es2015",
+      "es2016",
+      "es2017",
+      "dom",
+      "webworker"
+    ],
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "outDir": "./dist",
+    "strictNullChecks": false,
+    "target": "es6",
+    "removeComments": true,
+    "preserveConstEnums": true,
+    "module": "commonjs",
+    "sourceMap": false
+  },
+  "exclude": [
+    "./tmp",
+    "./test",
+    "./dist",
+    "./node_modules"
+  ]
+}

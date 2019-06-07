@@ -1,0 +1,41 @@
+.clear-add-actions {
+  padding: 10px;
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+
+  > .query-tableau {
+    width: 90%;
+    padding: 10px;
+    border: 1px green solid;
+    background-color: #000000;
+    color: #ffffff;;
+    font-weight: bolder;
+    font-size: x-small;
+    font-family: "Helvetica";
+  }
+}
+
+.display-all {
+  border: 1px solid grey;
+  width: 50vw;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-gap: 5px;
+  align-items: center;
+  font-family: "Helvetica";
+
+  > span {
+    background: darkgreen;
+    color: #fff;
+    font-size: smaller;
+  }
+}
+
+.code-yellow {
+  color: yellow;
+}
+
+.code-red {
+  color: orangered;
+}

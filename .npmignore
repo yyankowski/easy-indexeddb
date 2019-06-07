@@ -1,0 +1,9 @@
+src
+.idea
+.vscode
+package-lock.json
+tsconfig.json
+tslint.json
+tmp
+test
+*.log
