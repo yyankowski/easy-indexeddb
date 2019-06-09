@@ -112,39 +112,6 @@ export class EasyIndexedDb {
     };
 
     /**
-     * Retrieves all the values from the specified store.
-     * @param {string} storeName The name of the store to get the data from.
-     * @returns {Promise<ReadonlyArray<T>>}
-     */
-    getAll = <T>(storeName: string): Promise<ReadonlyArray<T>> => {
-        return this.db.then(db => {
-            const transaction = db.transaction([storeName],'readwrite');
-            const store = transaction.objectStore(storeName);
-            const cursor = store.openCursor();
-            const res: Array<T> = [];
-
-            cursor.onsuccess = (e: Event & {target: {result: IDBCursorWithValue}}) => {
-                const _cursor = e.target.result;
-                if(!_cursor){
-                    return;
-                }
-                res.push(_cursor.value);
-                _cursor.continue();
-            };
-
-            return new Promise<ReadonlyArray<T>>((resolve, reject) => {
-                transaction.oncomplete = () => {
-                    resolve([...res]);
-                };
-
-                transaction.onerror = () => {
-                    reject(new Error(`Failed completing the get cursor.`));
-                };
-            });
-        });
-    };
-
-    /**
      * Updates a record in the specified store.
      * @param {string} storeName
      * @returns {(key: string, value: T) => Promise<void | never>}
