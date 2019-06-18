@@ -5,7 +5,7 @@ The library provides an easy promise-like access to the indexedDB API as well as
 
 **Install**
 ```
-npm install --save git+https://github.com/yyankowski/easy-indexeddb.git#1.0.2.1
+npm install --save git+https://github.com/yyankowski/easy-indexeddb.git#v1.0.0
 ```
 
 **Import the library**
