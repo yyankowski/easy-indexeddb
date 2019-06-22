@@ -2,13 +2,11 @@
   "compilerOptions": {
     "alwaysStrict": true,
     "declaration": true,
-    "declarationDir": "./dist",
     "lib": [
       "es2015",
       "es2016",
       "es2017",
-      "dom",
-      "webworker"
+      "dom"
     ],
     "noImplicitAny": true,
     "noImplicitThis": true,
@@ -25,5 +23,7 @@
     "./test",
     "./dist",
     "./node_modules"
-  ]
+  ],
+  "files": ["./src/index.ts"],
+  "types": ["./src/index.ts"]
 }
