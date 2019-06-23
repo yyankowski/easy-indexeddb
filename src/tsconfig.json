@@ -10,7 +10,7 @@
     ],
     "noImplicitAny": true,
     "noImplicitThis": true,
-    "outDir": "./dist",
+    "outDir": "../dist",
     "strictNullChecks": false,
     "target": "es6",
     "removeComments": true,
@@ -21,9 +21,11 @@
   "exclude": [
     "./tmp",
     "./test",
-    "./dist",
+    "../dist",
     "./node_modules"
   ],
-  "files": ["./src/index.ts"],
+  "files": [
+    "./index.ts"
+  ],
   "types": ["./src/index.ts"]
 }

@@ -7,3 +7,5 @@ tslint.json
 tmp
 test
 *.log
+yarn.lock
+tests
