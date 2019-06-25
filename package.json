@@ -11,8 +11,8 @@
   "scripts": {
     "build": "rm -rf ./dist && tsc -p src/tsconfig.json",
     "test": "./node_modules/.bin/jest --config jestconfig.json",
-    "prepare" : "npm run build",
-    "prepublishOnly" : "npm run test"
+    "prepare": "npm run build",
+    "prepublishOnly": "npm run test"
   },
   "keywords": [
     "indexeddb",
@@ -22,8 +22,9 @@
   "license": "MIT",
   "devDependencies": {
     "@types/jest": "^24.0.15",
+    "fake-indexeddb": "^2.1.1",
     "jest": "^24.8.0",
     "ts-jest": "^24.0.2",
-    "typescript": "^3.3.4000"
+    "typescript": "^3.5.2"
   }
 }
