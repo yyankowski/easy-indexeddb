@@ -10,12 +10,23 @@ describe('testing creation of entities', () => {
     beforeAll(() => {
         db = EasyIndexedDb.of({
             indexedDbInst: window.indexedDB,
-            storeNames: ['store-1', 'store-2', 'store-3'],
+            storeNames: ['store-1'],
             dbName: 'database-name'
         });
 
         addToStore1 = db.add('store-1');
         getFromStore1 = db.get<TestEntity>('store-1');
+    });
+
+    afterAll(async (done) => {
+        try {
+            await db.clear('store-1');
+            done();
+        }
+        catch (e) {
+            expect(e.message).toMatch('error');
+            done();
+        }
     });
 
     test('sanity checks for database initialization', () => {
