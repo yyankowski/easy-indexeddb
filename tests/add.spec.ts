@@ -37,13 +37,13 @@ describe('testing creation of entities', () => {
         await addToStore1('id1', {name: 'entity 1'});
         const createdEntity: TestEntity = await getFromStore1('id1');
 
-        expect(createdEntity.name).toEqual('entity 1');
+        expect(createdEntity.name).toBe('entity 1');
     });
 
     test('entity #2 should be created', async () => {
         await addToStore1('id2', {name: 'entity 2'});
         const createdEntity: TestEntity = await getFromStore1('id2');
-        expect(createdEntity.name).toEqual('entity 2');
+        expect(createdEntity.name).toBe('entity 2');
     });
 
     test('there should be 2 entities in the database', async () => {
