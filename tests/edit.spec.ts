@@ -47,6 +47,6 @@ describe('testing creation of entities', () => {
         await editStore2('id2', {id: 'id2', name: 'entity 2 edited'});
         const editedEntity: TestEntity = await getFromStore2('id2');
 
-        expect(editedEntity.name).toEqual('entity 2 edited');
+        expect(editedEntity.name).toBe('entity 2 edited');
     });
 });
