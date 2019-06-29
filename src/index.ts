@@ -3,7 +3,7 @@ type InitData = { indexedDbInst: IDBFactory, storeNames: ReadonlyArray<string>, 
 
 export class EasyIndexedDb {
     private readonly db: Promise<IDBDatabase>;
-    private static instanceCache: { [key: string]: EasyIndexedDb } = {};
+    private static readonly instanceCache: { [key: string]: EasyIndexedDb } = {};
 
     private constructor(indexedDbInst: IDBFactory, storeNames: ReadonlyArray<string>, dbName: string) {
         if (!indexedDbInst) {
