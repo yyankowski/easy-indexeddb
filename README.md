@@ -17,11 +17,11 @@ import {EasyIndexedDb} from 'easy-indexeddb/src';
 ```
 const db = EasyIndexedDb.of({
             indexedDbInst: window.indexedDB,
-            dbName: 'database-name',
-            storeNames: ['store-1', 'store-2', 'store-3']
+            storeNames: ['store-1', 'store-2', 'store-3'],
+            dbName: 'database-name'
         });
 ```
-_The second argument is a Set containing store names to be created, the third is the name of the database to be created._
+_The second argument is a set containing store names to be created, the third is the name of the database to be created._
 
 **Get operations**
 ```
