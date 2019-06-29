@@ -1,12 +1,12 @@
 type DBMixin = { target: { result: IDBDatabase } };
-type InitData = {indexedDbInst: IDBFactory, storeNames: ReadonlyArray<string>, dbName: string};
+type InitData = { indexedDbInst: IDBFactory, storeNames: ReadonlyArray<string>, dbName: string };
 
 export class EasyIndexedDb {
     private readonly db: Promise<IDBDatabase>;
-    private static instanceCache: {[key: string]: EasyIndexedDb} = {};
+    private static instanceCache: { [key: string]: EasyIndexedDb } = {};
 
     private constructor(indexedDbInst: IDBFactory, storeNames: ReadonlyArray<string>, dbName: string) {
-        if(!indexedDbInst){
+        if (!indexedDbInst) {
             throw new Error('No indexedDb instance available. Check your browser support.');
         }
 
@@ -42,8 +42,8 @@ export class EasyIndexedDb {
      */
     static of({indexedDbInst, storeNames, dbName}: InitData): EasyIndexedDb {
         // returned the cached version if present
-        const cacheKey =  `${dbName}_${storeNames.join('-')}`;
-        if(!this.instanceCache.hasOwnProperty(cacheKey)){
+        const cacheKey = `${dbName}_${storeNames.join('-')}`;
+        if (!this.instanceCache.hasOwnProperty(cacheKey)) {
             this.instanceCache[cacheKey] = new EasyIndexedDb(indexedDbInst, storeNames, dbName);
         }
 
@@ -51,13 +51,13 @@ export class EasyIndexedDb {
     }
 
     private getStoreFromDb = (storeName: string, db: IDBDatabase): IDBObjectStore => {
-        const transaction = db.transaction([storeName],'readwrite');
+        const transaction = db.transaction([storeName], 'readwrite');
         return transaction.objectStore(storeName);
     };
 
-    private getRequestPromise = <T>({req, actionType, storeName}: {req: IDBRequest, actionType: string, storeName: string}): Promise<T> => {
-        return new Promise<T>((resolve, reject)=> {
-            req.onsuccess = (e: Event & {target: {result:T}}) => resolve(e.target.result);
+    private getRequestPromise = <T>({req, actionType, storeName}: { req: IDBRequest, actionType: string, storeName: string }): Promise<T> => {
+        return new Promise<T>((resolve, reject) => {
+            req.onsuccess = (e: Event & { target: { result: T } }) => resolve(e.target.result);
             req.onerror = (e: Event) =>
                 reject(new Error(`Failed to ${actionType} to ${storeName}: ${e}`));
         });
@@ -68,7 +68,7 @@ export class EasyIndexedDb {
      * @param {string} storeName
      * @returns {(key: string, value: T) => Promise<void | never>}
      */
-    add = <T>(storeName: string) => (key: string, value: T): Promise<void> => {
+    add = <T>(storeName: string) => (key: string, value: Readonly<T>): Promise<void> => {
         return this.db
             .then(db => this.getStoreFromDb(storeName, db))
             .then(store => store.add(value, key))
@@ -118,14 +118,14 @@ export class EasyIndexedDb {
      */
     getAll = <T>(storeName: string): Promise<ReadonlyArray<T>> => {
         return this.db.then(db => {
-            const transaction = db.transaction([storeName],'readwrite');
+            const transaction = db.transaction([storeName], 'readwrite');
             const store = transaction.objectStore(storeName);
             const cursor = store.openCursor();
             const res: Array<T> = [];
 
-            cursor.onsuccess = (e: Event & {target: {result: IDBCursorWithValue}}) => {
+            cursor.onsuccess = (e: Event & { target: { result: IDBCursorWithValue } }) => {
                 const _cursor = e.target.result;
-                if(!_cursor){
+                if (!_cursor) {
                     return;
                 }
                 res.push(_cursor.value);
@@ -149,7 +149,7 @@ export class EasyIndexedDb {
      * @param {string} storeName
      * @returns {(key: string, value: T) => Promise<void | never>}
      */
-    put = <T>(storeName: string) => (key: string, value: T): Promise<void> => {
+    put = <T>(storeName: string) => (key: string, value: Readonly<T>): Promise<void> => {
         return this.db
             .then(db => this.getStoreFromDb(storeName, db))
             .then(store => store.put(value, key))
