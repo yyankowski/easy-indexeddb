@@ -9,3 +9,6 @@ test
 *.log
 yarn.lock
 tests
+jestconfig.json
+.travis.yml
+.npmignore
