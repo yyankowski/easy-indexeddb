@@ -20,7 +20,7 @@
   },
   "exclude": [
     "./tmp",
-    "./test",
+    "./tests",
     "../dist",
     "./node_modules"
   ],
