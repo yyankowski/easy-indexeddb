@@ -58,8 +58,9 @@ export class EasyIndexedDb {
     private getRequestPromise = <T>({req, actionType, storeName}: { req: IDBRequest, actionType: string, storeName: string }): Promise<T> => {
         return new Promise<T>((resolve, reject) => {
             req.onsuccess = (e: Event & { target: { result: T } }) => resolve(e.target.result);
-            req.onerror = (e: Event) =>
-                reject(new Error(`Failed to ${actionType} to ${storeName}: ${e}`));
+            req.onerror = (e: Event) => reject(e);
+        }).catch(error => {
+            throw new Error(`Failed to ${actionType} to ${storeName}: ${error}`);
         });
     };
 
@@ -118,29 +119,9 @@ export class EasyIndexedDb {
      */
     getAll = <T>(storeName: string): Promise<ReadonlyArray<T>> => {
         return this.db.then(db => {
-            const transaction = db.transaction([storeName], 'readwrite');
+            const transaction = db.transaction([storeName], 'readonly');
             const store = transaction.objectStore(storeName);
-            const cursor = store.openCursor();
-            const res: Array<T> = [];
-
-            cursor.onsuccess = (e: Event & { target: { result: IDBCursorWithValue } }) => {
-                const _cursor = e.target.result;
-                if (!_cursor) {
-                    return;
-                }
-                res.push(_cursor.value);
-                _cursor.continue();
-            };
-
-            return new Promise<ReadonlyArray<T>>((resolve, reject) => {
-                transaction.oncomplete = () => {
-                    resolve([...res]);
-                };
-
-                transaction.onerror = () => {
-                    reject(new Error(`Failed completing the get cursor.`));
-                };
-            });
+            return store.getAll();
         });
     };
 
