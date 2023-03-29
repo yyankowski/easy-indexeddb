@@ -8,7 +8,15 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Install dependencies
-        run: npm install
+        run: |
+          npm install
+          if [ $? -eq 0 ]
+          then
+            echo "Install dependencies passed"
+          else
+            echo "nstall dependencies"
+            exit 1
+          fi
       - name: Run tests
         run: |
           npm test
