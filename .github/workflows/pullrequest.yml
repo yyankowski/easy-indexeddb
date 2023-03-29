@@ -1,0 +1,20 @@
+name: Test on Pull Request
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+      with:
+        ref: ${{ github.head_ref }}
+
+    - name: Install Dependencies
+      run: yarn install
+
+    - name: Run Tests
+      run: yarn test
