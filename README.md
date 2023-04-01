@@ -4,7 +4,7 @@ This no-dependencies library provides an easy promise-like access to the indexed
 ## Example ##
 
 **Install**
-```bash
+```shell
 npm install --save git+https://github.com/yyankowski/easy-indexeddb.git#v1.0.0
 ```
 
