@@ -1,11 +1,16 @@
 # easy-indexeddb
-This no-dependencies library provides an easy promise-like access to the indexedDB API as well as a simple key-value based storage and retrieval functionality.
+This lightweight library offers a hassle-free way to work with indexedDB API without any dependencies. It provides a simple and intuitive promise-based interface for storing and retrieving data, as well as a key-value based storage mechanism for easy data management. With this library, developers can efficiently access and manipulate data in indexedDB, without having to deal with the complexities of the underlying API.
 
-## Example ##
+## Example
 
 **Install**
 ```console
 npm install --save git+https://github.com/yyankowski/easy-indexeddb.git#v1.0.0
+```
+
+or using **yarn**
+```console
+yarn add git+https://github.com/yyankowski/easy-indexeddb.git#v1.0.0
 ```
 
 **Import the library**
