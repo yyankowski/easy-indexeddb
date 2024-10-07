@@ -2,12 +2,7 @@
   "compilerOptions": {
     "alwaysStrict": true,
     "declaration": true,
-    "lib": [
-      "es2015",
-      "es2016",
-      "es2017",
-      "dom"
-    ],
+    "lib": ["es2015", "es2016", "es2017", "dom"],
     "noImplicitAny": true,
     "noImplicitThis": true,
     "outDir": "../dist",
@@ -18,14 +13,7 @@
     "module": "commonjs",
     "sourceMap": false
   },
-  "exclude": [
-    "./tmp",
-    "./tests",
-    "../dist",
-    "./node_modules"
-  ],
-  "files": [
-    "./index.ts"
-  ],
+  "exclude": ["./tmp", "./tests", "../dist", "./node_modules"],
+  "files": ["./index.ts"],
   "types": ["./src/index.ts"]
 }
