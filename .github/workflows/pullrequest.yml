@@ -6,20 +6,22 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
+      - name: Install pnpm
+        run: npm install -g pnpm
       - uses: actions/checkout@v2
       - name: Install dependencies
         run: |
-          npm install
+          pnpm install
           if [ $? -eq 0 ]
           then
             echo "Install dependencies passed"
           else
-            echo "nstall dependencies"
+            echo "Install dependencies"
             exit 1
           fi
       - name: Run tests
         run: |
-          npm test
+          pnpm test
           if [ $? -eq 0 ]
           then
             echo "Tests passed"
