@@ -6,14 +6,21 @@ This lightweight library offers a hassle-free way to work with indexedDB API wit
 
 **Install**
 
+Using **npm**
 ```console
-npm install --save git+https://github.com/yyankowski/easy-indexeddb.git#v1.0.0
+npm install --save git+https://github.com/yyankowski/easy-indexeddb.git#v1.0.2
 ```
 
-or using **yarn**
+Using **yarn**
 
 ```console
-yarn add git+https://github.com/yyankowski/easy-indexeddb.git#v1.0.0
+yarn add git+https://github.com/yyankowski/easy-indexeddb.git#v1.0.2
+```
+
+Using **pnpm**
+
+```console
+pnpm add git+https://github.com/yyankowski/easy-indexeddb.git#v1.0.2
 ```
 
 **Import the library**
@@ -32,15 +39,13 @@ const db = EasyIndexedDb.of({
 });
 ```
 
-_The second argument is a set containing store names to be created, the third is the name of the database to be created._
+_The **storeNames** argument is an array containing store names to be created, and **dbName** is the name of the database to be created.._
 
 **Get operations**
 
 ```typescript
-const myCachedEntities: Promise<ReadonlyArray<MyEntity>> =
-  db.getAll<MyEntity>('store-1');
-const singleEntity: Promise<MyEntity> =
-  db.get<MyEntity>('store-1')('some-unique-id');
+const myCachedEntities: Promise<readonly MyEntity[]> = db.getAll<MyEntity>('store-1');
+const singleEntity: Promise<MyEntity> = db.get<MyEntity>('store-1')('some-unique-id');
 ```
 
 **Set operations**
