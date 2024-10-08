@@ -9,7 +9,11 @@ const storeNames = ['store-1', 'store-2'] as const;
 
 describe('Ensure expected results of main operations', () => {
   let db: EasyIndexedDb;
-  let addToStore, getFromStore, editStore, deleteFromStore;
+  let addToStore: ReturnType<typeof db.add>,
+    getFromStore: ReturnType<typeof db.get<TestEntity>>,
+    editStore: ReturnType<typeof db.put>,
+    deleteFromStore: ReturnType<typeof db.delete>;
+
   const entities = [
     { id: 'id1', name: 'entity-1' },
     { id: 'id2', name: 'entity-2' },
@@ -53,9 +57,7 @@ describe('Ensure expected results of main operations', () => {
         (entity: Readonly<TestEntity>) => {
           test(`entity ${entity.name} should be created in store ${currentStore}`, async () => {
             await addToStore(entity.id, entity);
-            const createdEntity: Readonly<TestEntity> = await getFromStore(
-              entity.id
-            );
+            const createdEntity = await getFromStore(entity.id);
             expect(createdEntity.name).toBe(entity.name);
           });
 
@@ -64,7 +66,7 @@ describe('Ensure expected results of main operations', () => {
               ...entity,
               name: `${entity.name}_edited`,
             });
-            const editedEntity: TestEntity = await getFromStore(entity.id);
+            const editedEntity = await getFromStore(entity.id);
             expect(editedEntity.name).toBe(`${entity.name}_edited`);
           });
         }
@@ -86,6 +88,14 @@ describe('Ensure expected results of main operations', () => {
         await deleteFromStore(entity2.id);
         const _entities = await db.getAll<TestEntity>(currentStore);
         expect(_entities).toHaveLength(entities.length - 2);
+      });
+
+      test(`clearing store ${currentStore} works as expected`, async () => {
+        const [entity] = entities;
+        addToStore(entity.id, entity);
+        await db.clear(currentStore);
+        const allEntities = await db.getAll(currentStore);
+        expect(allEntities).toHaveLength(0);
       });
     }
   );
