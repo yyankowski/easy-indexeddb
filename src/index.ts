@@ -26,6 +26,9 @@ export class EasyIndexedDb {
 
     this.db = new Promise<IDBDatabase>((resolve, reject) => {
       openRequest.onsuccess = (e: Event & IDBMixin) => {
+        if (!e.target.result) {
+          reject(new Error('Unexpected result object structure.'));
+        }
         resolve(e.target.result);
       };
 
@@ -163,7 +166,7 @@ export class EasyIndexedDb {
    */
   getAll = <T>(storeName: string): Promise<readonly T[]> => {
     return this.db.then((db) => {
-      const transaction = db.transaction([storeName], 'readwrite');
+      const transaction = db.transaction([storeName], 'readonly');
       const store = transaction.objectStore(storeName);
       const cursor = store.openCursor();
       const res: T[] = [];
@@ -181,11 +184,15 @@ export class EasyIndexedDb {
 
       return new Promise<readonly T[]>((resolve, reject) => {
         transaction.oncomplete = () => {
-          resolve([...res]);
+          resolve(res);
         };
 
         transaction.onerror = () => {
           reject(new Error(`Failed completing the get cursor.`));
+        };
+
+        cursor.onerror = (e) => {
+          reject(new Error(`Cursor error: ${e}`));
         };
       });
     });
