@@ -5,27 +5,25 @@ on: pull_request
 jobs:
   test:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      matrix:
+        node-version: [17.x, 18.x, 20.x]
+      fail-fast: false
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}-${{ matrix.node-version }}
+      cancel-in-progress: true  
     steps:
-      - name: Install pnpm
-        run: npm install -g pnpm
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'     
       - name: Install dependencies
-        run: |
-          pnpm install
-          if [ $? -eq 0 ]
-          then
-            echo "Install dependencies passed"
-          else
-            echo "Install dependencies"
-            exit 1
-          fi
+        run: pnpm install
       - name: Run tests
-        run: |
-          pnpm test
-          if [ $? -eq 0 ]
-          then
-            echo "Tests passed"
-          else
-            echo "Tests failed"
-            exit 1
-          fi
+        run: pnpm test
