@@ -1,0 +1,37 @@
+name: CodeQL Security Scan
+on:
+  pull_request:
+    branches: [ master ]
+#  schedule:
+#    - cron: '0 2 * * *'  # Run daily at 2 AM UTC
+
+jobs:
+  analyze:
+    name: Analyze Code for Security Issues
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      actions: read
+      contents: read
+
+    strategy:
+      fail-fast: false  # Continues with other languages if one fails
+      matrix:
+        language: [ 'javascript', 'python', 'typescript' ]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        # Remove the ref: master to allow PR analysis to work correctly
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+          queries: security-extended,security-and-quality
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
