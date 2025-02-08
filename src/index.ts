@@ -6,7 +6,7 @@ interface IDataInit {
   indexedDbInst: IDBFactory;
   storeNames: readonly string[];
   dbName: string;
-  version: number;
+  version?: number;
 }
 
 interface IRequestParams<T> {
