@@ -5,9 +5,9 @@ interface TestEntity {
   id: string;
   name: string;
 }
-const storeNames = ['store-1', 'store-2'] as const;
 
 describe('Ensure expected results of main operations', () => {
+  const storeNames = ['store-1', 'store-2'] as const;
   let db: EasyIndexedDb;
   let addToStore: ReturnType<typeof db.add>,
     getFromStore: ReturnType<typeof db.get<TestEntity>>,
@@ -99,4 +99,121 @@ describe('Ensure expected results of main operations', () => {
       });
     }
   );
+
+  describe('Instance caching', () => {
+    test('returns same instance for identical configuration', () => {
+      const db2 = EasyIndexedDb.of({
+        indexedDbInst: indexedDB,
+        storeNames,
+        dbName: 'unit-test-db',
+      });
+      expect(db2).toBe(db);
+    });
+
+    test('returns different instance for different dbName', () => {
+      const db2 = EasyIndexedDb.of({
+        indexedDbInst: indexedDB,
+        storeNames,
+        dbName: 'different-db',
+      });
+      expect(db2).not.toBe(db);
+    });
+  });
+
+  describe('Error handling', () => {
+    test('throws error when adding duplicate key', async () => {
+      const addToStore = db.add('store-1');
+      await addToStore('key1', { data: 'test' });
+
+      await expect(addToStore('key1', { data: 'duplicate' })).rejects.toThrow(
+        'Failed to add'
+      );
+    });
+
+    test('throws error for invalid store name', async () => {
+      await expect(db.get('non-existent-store')('key1')).rejects.toThrow(
+        'Invalid store name'
+      );
+    });
+
+    test('returns undefined for non-existent key', async () => {
+      const getFromStore = db.get('store-1');
+      const result = await getFromStore('non-existent-key');
+      expect(result).toBeUndefined();
+    });
+  });
+
+  describe('Database versioning', () => {
+    test('handles version upgrades', () => {
+      const dbWithVersion = EasyIndexedDb.of({
+        indexedDbInst: indexedDB,
+        storeNames,
+        dbName: 'versioned-db',
+        version: 2,
+      });
+      expect(dbWithVersion).toBeDefined();
+    });
+  });
+
+  describe('Transaction handling', () => {
+    const store = 'store-1';
+    beforeEach(() => db.clear(store));
+
+    test('handles concurrent operations with addMany', async () => {
+      await db.addMany(store, [
+        ['key1', { data: 'test1' }],
+        ['key2', { data: 'test2' }],
+        ['key3', { data: 'test3' }],
+      ]);
+
+      const getFromStore = db.get(store);
+      const results = await Promise.all([
+        getFromStore('key1'),
+        getFromStore('key2'),
+        getFromStore('key3'),
+      ]);
+
+      expect(results).toHaveLength(3);
+      expect(results.every(Boolean)).toBe(true);
+    });
+
+    test('handles concurrent operations', async () => {
+      const addToStore = db.add(store);
+      const getFromStore = db.get(store);
+
+      // Perform multiple operations concurrently
+      await Promise.all([
+        addToStore('key1', { data: 'test1' }),
+        addToStore('key2', { data: 'test2' }),
+        addToStore('key3', { data: 'test3' }),
+      ]);
+
+      const results = await Promise.all([
+        getFromStore('key1'),
+        getFromStore('key2'),
+        getFromStore('key3'),
+      ]);
+
+      expect(results).toHaveLength(3);
+      expect(results.every(Boolean)).toBe(true);
+    });
+  });
+
+  describe('Edge cases', () => {
+    test('handles empty values', async () => {
+      const putToStore = db.put('store-1');
+      await putToStore('empty-string', '');
+      await putToStore('null-value', null);
+      await putToStore('undefined-value', undefined);
+
+      const getFromStore = db.get('store-1');
+      const emptyString = await getFromStore('empty-string');
+      const nullValue = await getFromStore('null-value');
+      const undefinedValue = await getFromStore('undefined-value');
+
+      expect(emptyString).toBe('');
+      expect(nullValue).toBeNull();
+      expect(undefinedValue).toBeUndefined();
+    });
+  });
 });

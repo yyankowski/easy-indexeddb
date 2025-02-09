@@ -131,6 +131,8 @@ export class EasyIndexedDb {
     storeName,
   }: IRequestParams<T>): Promise<T> {
     return new Promise<T>((resolve, reject) => {
+      const transaction = request.transaction;
+
       request.onsuccess = () => resolve(request.result);
       request.onerror = () => {
         reject(
@@ -138,6 +140,18 @@ export class EasyIndexedDb {
             `Failed to ${actionType} in store ${storeName}: ${request.error?.message}`
           )
         );
+      };
+
+      // Add transaction error handling
+      transaction.onerror = () => {
+        reject(new Error(`Transaction failed: ${transaction.error?.message}`));
+      };
+
+      // Keep transaction alive until request completes
+      transaction.oncomplete = () => {
+        if (!request.result) {
+          resolve(request.result);
+        }
       };
     });
   }
@@ -156,6 +170,24 @@ export class EasyIndexedDb {
         storeName,
       });
     };
+  }
+
+  /**
+   * Adds multiple values to the store. Fails if any key already exists.
+   */
+  async addMany<T>(storeName: string, entries: [string, T][]): Promise<void> {
+    const transaction = await this.getTransaction(storeName, 'readwrite');
+    const store = this.getStore(transaction, storeName);
+
+    await Promise.all(
+      entries.map(([key, value]) =>
+        this.createRequestPromise({
+          request: store.add(value, key),
+          actionType: 'add',
+          storeName,
+        })
+      )
+    );
   }
 
   /**
