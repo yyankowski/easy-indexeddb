@@ -28,7 +28,7 @@ export class EasyIndexedDb {
     dbName: IDataInit['dbName'],
     version: IDataInit['version']
   ) {
-    if (!indexedDbInst) {
+    if (indexedDbInst === undefined) {
       throw new Error(
         'No indexedDb instance available. Check your browser support.'
       );
@@ -38,11 +38,10 @@ export class EasyIndexedDb {
     const openRequest = indexedDbInst.open(dbName, version);
 
     this.db = new Promise<IDBDatabase>((resolve, reject) => {
-      openRequest.onsuccess = (e: Event & IDBMixin) => {
+      openRequest.onsuccess = (e: Event & IDBMixin): void => {
         const db = e.target.result;
-        if (!db) {
-          reject(new Error('Failed to open IndexedDB database'));
-          return;
+        if (db === undefined) {
+          return reject(new Error('Failed to open IndexedDB database'));
         }
 
         // Validate all stores exist
@@ -50,21 +49,24 @@ export class EasyIndexedDb {
           (store) => !db.objectStoreNames.contains(store)
         );
         if (missingStores.length > 0) {
-          reject(new Error(`Missing stores: ${missingStores.join(', ')}`));
-          return;
+          return reject(
+            new Error(`Missing stores: ${missingStores.join(', ')}`)
+          );
         }
 
-        resolve(db);
+        return resolve(db);
       };
 
-      openRequest.onerror = () => {
+      openRequest.onerror = (): void => {
         reject(
           new Error(`Failed to open IndexedDB: ${openRequest.error?.message}`)
         );
       };
     });
 
-    openRequest.onupgradeneeded = (e: IDBVersionChangeEvent & IDBMixin) => {
+    openRequest.onupgradeneeded = (
+      e: IDBVersionChangeEvent & IDBMixin
+    ): void => {
       const db = e.target.result;
       storeNames.forEach((storeName) => {
         if (!db.objectStoreNames.contains(storeName)) {
@@ -93,7 +95,7 @@ export class EasyIndexedDb {
 
     const cacheKey = `${dbName}_${[...storeNames].sort().join('-')}`;
     const cached = this.instanceCache.get(cacheKey);
-    if (cached) {
+    if (cached !== undefined) {
       return cached;
     }
 
@@ -131,10 +133,8 @@ export class EasyIndexedDb {
     storeName,
   }: IRequestParams<T>): Promise<T> {
     return new Promise<T>((resolve, reject) => {
-      const transaction = request.transaction;
-
-      request.onsuccess = () => resolve(request.result);
-      request.onerror = () => {
+      request.onsuccess = (): void => resolve(request.result);
+      request.onerror = (): void => {
         reject(
           new Error(
             `Failed to ${actionType} in store ${storeName}: ${request.error?.message}`
@@ -142,14 +142,23 @@ export class EasyIndexedDb {
         );
       };
 
+      const transaction = request.transaction;
+
+      if (!transaction) {
+        return reject(
+          new Error(
+            `No transaction found for ${actionType} operation in store ${storeName}`
+          )
+        );
+      }
       // Add transaction error handling
-      transaction.onerror = () => {
+      transaction.onerror = (): void => {
         reject(new Error(`Transaction failed: ${transaction.error?.message}`));
       };
 
       // Keep transaction alive until request completes
-      transaction.oncomplete = () => {
-        if (!request.result) {
+      transaction.oncomplete = (): void => {
+        if (request.result != null) {
           resolve(request.result);
         }
       };
@@ -248,7 +257,7 @@ export class EasyIndexedDb {
       const results: T[] = [];
       const cursor = store.openCursor();
 
-      cursor.onsuccess = () => {
+      cursor.onsuccess = (): void => {
         const currentCursor = cursor.result;
         if (currentCursor) {
           results.push(currentCursor.value);
@@ -256,13 +265,13 @@ export class EasyIndexedDb {
         }
       };
 
-      cursor.onerror = (e) => {
+      cursor.onerror = (e): void => {
         reject(new Error(`Cursor error: ${e}`));
       };
 
-      transaction.oncomplete = () => resolve(results);
+      transaction.oncomplete = (): void => resolve(results);
 
-      transaction.onerror = () => {
+      transaction.onerror = (): void => {
         reject(
           new Error(
             `Failed to get all records from ${storeName}: ${transaction.error?.message}`
